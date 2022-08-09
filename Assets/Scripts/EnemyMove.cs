@@ -6,8 +6,9 @@ using UnityEngine;
 public class EnemyMove : MonoBehaviour
 {
     [SerializeField] [Range(1f, 10f)] float speed = 1f;
+    [SerializeField] [Range(0.1f, 2f)] float rotationSpeed = 1f;
 
-    enum ZombieTypes { Crawler, Stalker, Rioter }
+    enum ZombieTypes { BrainLess, Stalker, Observer }
 
     [SerializeField] ZombieTypes zombieTypes;
 
@@ -18,12 +19,12 @@ public class EnemyMove : MonoBehaviour
     {
         switch (zombieTypes)
         {
-            case ZombieTypes.Crawler:
+            case ZombieTypes.BrainLess:
                 MoveForward(); break;
             case ZombieTypes.Stalker:
                 ChasePlayer(); break;
-            case ZombieTypes.Rioter:
-                RotateAroundPlayer(); break;
+            case ZombieTypes.Observer:
+                LookPlayer(); break;
         }
     }
 
@@ -42,14 +43,22 @@ public class EnemyMove : MonoBehaviour
         }
     }
 
+
+    /*    
     private void RotateAroundPlayer()
     {
         LookPlayer();
         transform.RotateAround(playerTransform.position, Vector3.up, 5f * Time.deltaTime);
+
+
     }
+    */
 
     private void LookPlayer()
     {
-        transform.LookAt(playerTransform);
+        Vector3 lookPos = playerTransform.position - transform.position;
+        lookPos.y = 0f;
+        Quaternion newRotation = Quaternion.LookRotation(lookPos);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, newRotation, rotationSpeed);
     }
 }
